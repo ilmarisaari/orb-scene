@@ -32,7 +32,7 @@ export default class earthScene extends Group {
       emissiveMap: earthLights,
       emissiveIntensity: 1,
       roughnessMap: earthGroundStencil,
-      roughness: 1
+      roughness: .6,
     });
 
     // Create clouds
