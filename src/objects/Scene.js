@@ -32,13 +32,31 @@ export default class OrbScene extends Group {
     orb.castShadow = true;
     orb.receiveShadow = false;
 
-    const orb1 = new THREE.Mesh(orbgeo, matcapmat);
-    orb1.scale.set(.2, .2, .2);
-    orb1.position.set(7, 2.5, 0);
 
-    const empty1 = new THREE.Object3D();
-    const group1 = new THREE.Group();
-    group1.add(orb1, empty1);
+    // Setup smaller orbs
+
+    function createOrb(scale, offset) {
+      let orb = new THREE.Mesh(orbgeo, matcapmat);
+      orb.scale.set(scale, scale, scale);
+      orb.position.set(offset, 2.5, 0);
+
+      let empty = new THREE.Object3D();
+      let group = new THREE.Group();
+      group.add(orb, empty);
+      group.rotation.y = Math.random()*2*Math.PI;
+      orb.receiveShadow = true;
+      orb.castShadow = true;
+
+      return group;
+    }
+
+    var orb1 = createOrb(.2, 7);
+    var orb2 = createOrb(.1, 9);
+    var orb3 = createOrb(.15, 13);
+    var orb4 = createOrb(.12, 18);
+    var orb5 = createOrb(.18, 21);
+
+    console.log(orb1)
 
     const planegeo = new THREE.PlaneBufferGeometry( 80, 80, 200, 200);
     const planemat = new THREE.MeshStandardMaterial({ color: 0xfafafa });
@@ -70,7 +88,7 @@ export default class OrbScene extends Group {
     plane.rotation.x = -Math.PI / 2;
     plane.receiveShadow = true;
 
-    this.add(orb, group1, plane);
+    this.add(orb, plane, orb1, orb2, orb3, orb4, orb5);
 
     //const raycaster = new THREE.Raycaster();
     //const mouse = new THREE.Vector2();

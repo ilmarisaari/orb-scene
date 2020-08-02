@@ -1,5 +1,3 @@
-# Earth visualization
+# Orb scene
 
-Earth visualization test with three-js. Features earth, rotating clouds and atmospheric effect with a custom fresnel shader.
-
-Dat.GUI is used for controlling the emissive city lights effect.
+A 3D visualization experiment with three-js. Features a matcapped orb, plane with a custom vertex shader distortion and scene setup with fog and post processing.

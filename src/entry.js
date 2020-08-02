@@ -1,18 +1,10 @@
-/**
- * entry.js
- * 
- * This is the first file loaded. It sets up the Renderer, 
- * Scene and Camera. It also starts the render loop and 
- * handles window resizes.
- * 
- */
-
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { AfterimagePass } from 'three/examples/jsm/postprocessing/AfterimagePass.js';
 import { gsap } from 'gsap';
 
 import OrbScene from './objects/Scene.js';
@@ -30,8 +22,8 @@ const clock = new THREE.Clock();
 // scene
 scene.add(orbScene);
 
-const axesHelper = new THREE.AxesHelper(8);
-scene.add(axesHelper);
+//const axesHelper = new THREE.AxesHelper(8);
+//scene.add(axesHelper);
 
 var loader = new THREE.CubeTextureLoader();
 loader.setPath( '/src/objects/images/MilkyWay/' );
@@ -41,6 +33,38 @@ var textureCube = loader.load( [
   'dark-s_py.jpg', 'dark-s_ny.jpg',
   'dark-s_pz.jpg', 'dark-s_nz.jpg'
 ] );
+
+var audiolistener = new THREE.AudioListener();
+
+camera.add( audiolistener );
+
+var sceneAmbient = new THREE.Audio( audiolistener );
+
+scene.add( sceneAmbient );
+
+var audioloader = new THREE.AudioLoader();
+
+audioloader.load(
+  '/src/objects/sounds/ambient_world_sound.ogg',
+
+  // onLoad callback
+  function(audioBuffer) {
+    
+    sceneAmbient.setBuffer(audioBuffer);
+
+    sceneAmbient.play();
+  },
+
+  // onProgress callback
+  function ( xhr ) {
+		//console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+	},
+
+	// onError callback
+	function ( err ) {
+		console.log( 'An error happened' );
+	}
+);
 
 
 //renderer.setClearColor( 0xedb941, 1 );
@@ -65,6 +89,11 @@ var composer = new EffectComposer( renderer );
 var renderPass = new RenderPass( scene, camera );
 composer.addPass( renderPass );
 
+var afterimagePass = new AfterimagePass();
+afterimagePass.setSize(2048, 2048);
+console.log(afterimagePass);
+//composer.addPass( afterimagePass );
+
 var glitchPass = new GlitchPass();
 //composer.addPass( glitchPass );
 
@@ -81,21 +110,12 @@ bloomPass.strength = bloomParams.bloomStrength;
 bloomPass.radius = bloomParams.bloomRadius;
 
 //composer.addPass( bloomPass );
-bloomPass.renderToScreen = true;
+afterimagePass.renderToScreen = true;
 
 // controls
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.minDistance = 3.2;
 controls.maxDistance = 100;
-
-/* var guiValues = new function() {
-  this.lights = 1;
-}
-
-var guiControls = new dat.GUI();
-guiControls.add(guiValues, 'lights', 0, 1);
-*/
-
 
 // render loop
 const onAnimationFrameHandler = (timeStamp) => {
@@ -104,6 +124,11 @@ const onAnimationFrameHandler = (timeStamp) => {
 
   composer.render()
   orbScene.render(time);
+  orbScene.children[3].rotation.y += .002;
+  orbScene.children[4].rotation.y += .0015;
+  orbScene.children[5].rotation.y += .003;
+  orbScene.children[6].rotation.y += .004;
+  orbScene.children[7].rotation.y += .003;
   
   controls.update();
 
