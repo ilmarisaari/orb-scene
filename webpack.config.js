@@ -36,6 +36,6 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({'title': 'earth visualization'})
+    new HtmlWebpackPlugin({'title': 'orb scene'})
   ]
 }

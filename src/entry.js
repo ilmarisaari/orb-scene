@@ -13,18 +13,25 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-
-import EarthScene from './objects/Scene.js';
 import { gsap } from 'gsap';
-import * as dat from 'dat.gui';
+
+import OrbScene from './objects/Scene.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera();
 const renderer = new THREE.WebGLRenderer({antialias: true});
-const earthScene = new EarthScene();
+const orbScene = new OrbScene();
+
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const clock = new THREE.Clock();
 
 // scene
-scene.add(earthScene);
+scene.add(orbScene);
+
+const axesHelper = new THREE.AxesHelper(8);
+scene.add(axesHelper);
 
 var loader = new THREE.CubeTextureLoader();
 loader.setPath( '/src/objects/images/MilkyWay/' );
@@ -35,12 +42,17 @@ var textureCube = loader.load( [
   'dark-s_pz.jpg', 'dark-s_nz.jpg'
 ] );
 
-scene.background = textureCube;
+
+//renderer.setClearColor( 0xedb941, 1 );
+scene.background = new THREE.Color( 0xeed59a );
 scene.environment = textureCube;
 
+
+scene.fog = new THREE.Fog(0xeeed59a, .1, 70);
+
 // camera
-camera.position.set(6,3,-2);
-camera.lookAt(new THREE.Vector3(0,0,0));
+camera.position.set(6,2,-14);
+camera.lookAt(new THREE.Vector3(0,2,0));
 
 // renderer
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -76,26 +88,29 @@ var controls = new OrbitControls( camera, renderer.domElement );
 controls.minDistance = 3.2;
 controls.maxDistance = 100;
 
-var guiValues = new function() {
+/* var guiValues = new function() {
   this.lights = 1;
 }
 
 var guiControls = new dat.GUI();
 guiControls.add(guiValues, 'lights', 0, 1);
+*/
+
 
 // render loop
 const onAnimationFrameHandler = (timeStamp) => {
-  
+
+  const time = clock.getElapsedTime();
+
   composer.render()
-  //renderer.render(scene, camera);
-  earthScene.render && earthScene.render(timeStamp);
-  earthScene.children[1].material.emissiveIntensity = guiValues.lights;
+  orbScene.render(time);
   
   controls.update();
 
   window.requestAnimationFrame(onAnimationFrameHandler);
 }
 window.requestAnimationFrame(onAnimationFrameHandler);
+
 
 // resize
 const windowResizeHanlder = () => { 
@@ -111,6 +126,6 @@ window.addEventListener('resize', windowResizeHanlder);
 document.body.style.margin = 0;
 document.body.appendChild( renderer.domElement );
 
-// initial animation
-gsap.from(camera.position, 3, {z: -10, ease: "power2.out"})
 
+// initial animation
+gsap.from(orbScene.children[1].position, {duration: 5, y: 2.5, ease: "Sine.easeOut", repeat: -1, yoyo: true})

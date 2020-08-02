@@ -1,20 +1,33 @@
-import { Group, SpotLight, PointLight, AmbientLight, HemisphereLight, Color } from 'three';
+import { Group, DirectionalLight, AmbientLight, HemisphereLight, Color, Scene, DirectionalLightHelper, HemisphereLightHelper } from 'three';
 
 export default class BasicLights extends Group {
   constructor(...args) {
     super(...args);
 
-    const point = new PointLight(0xFFFFFF, 1, 10, 1);
-    const dir = new SpotLight(0xFFFFFF, 1.4, 7, 0.8, 1, 1);
+    const dir = new DirectionalLight(0xFFFFFF, .3);
     const ambi = new AmbientLight( 0x404040 , 0.66);
-    const hemi = new HemisphereLight( 0xffffbb, 0x080820, 1.4 )
+    const hemi = new HemisphereLight( 0xffffbb, 0x080820, .5 )
 
-    dir.position.set(5, 1, 2);
-    dir.target.position.set(0,0,0);
+    dir.position.set(2, 10, .5);
+    //dir.target.position.set(0,0,0);
+    dir.castShadow = true;
 
-    point.position.set(0, 1, 5);
+    dir.shadow.mapSize.width = 512;
+    dir.shadow.mapSize.height = 512;
+    dir.shadow.camera.near = 0.5;
+    dir.shadow.camera.far = 100;
 
-    this.add(ambi, hemi, dir);
+    console.log(dir.shadow)
+
+    this.add(dir, hemi);
+
+
+    const dirHelper = new DirectionalLightHelper(dir);
+    const hemiHelper = new HemisphereLightHelper(hemi, 5);
+
+    // Add helpers to scene
+    
+    //this.add(dirHelper, hemiHelper);
 
   }
 }
