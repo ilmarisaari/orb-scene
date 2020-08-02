@@ -1,4 +1,4 @@
-import { Group, DirectionalLight, AmbientLight, HemisphereLight, Color, Scene, DirectionalLightHelper, HemisphereLightHelper } from 'three';
+import { Group, DirectionalLight, AmbientLight, HemisphereLight, Color, Scene, DirectionalLightHelper, HemisphereLightHelper, CameraHelper } from 'three';
 
 export default class BasicLights extends Group {
   constructor(...args) {
@@ -12,12 +12,21 @@ export default class BasicLights extends Group {
     //dir.target.position.set(0,0,0);
     dir.castShadow = true;
 
-    dir.shadow.mapSize.width = 512;
-    dir.shadow.mapSize.height = 512;
+    dir.shadow.mapSize.width = 1024;
+    dir.shadow.mapSize.height = 1024;
     dir.shadow.camera.near = 0.5;
-    dir.shadow.camera.far = 100;
+    dir.shadow.camera.far = 200;
 
-    console.log(dir.shadow)
+    var side = 40;
+    dir.shadow.camera.left = side;
+    dir.shadow.camera.right = -side;
+    dir.shadow.camera.top = side;
+    dir.shadow.camera.bottom = -side;
+
+    //var shadowHelper = new CameraHelper( dir.shadow.camera )
+    //this.add(shadowHelper);
+
+    //console.log(dir.shadow)
 
     this.add(dir, hemi);
 
